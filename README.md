@@ -4,17 +4,27 @@
 
 IDE Eclipse 匯入Maven專案
 
-*輸出Excel
-開啟CCBOutputWordToExcel.class
+*產生需要翻譯清單Excel
+開啟CCBOutputWordToExcel.java
 
-修改inputResourcePath:輸入ccb路徑
-修改outputExcelPath:輸出excel路徑
+修改inputResourcePath:輸入ccb路徑含檔名
+修改outputExcelPath:輸出excel路徑含檔名
 Run程式
 
-*ccb自動翻譯
+
+--------------------------------------------
+
+
+*輸入翻譯完成Excel，CCB自動替換日文
 Excel譯文欄位不得為空
 
-開啟InputExcelTranslate.class
-修改inputExcelPath:輸入excel的路徑
-ccb路徑需要與excel路徑一致
+開啟InputExcelTranslate.java
+修改inputExcelPath : 輸入excel的路徑含檔名
+CCB路徑需要與Excel路徑欄位一致
 Run程式
+
+
+
+		*****************
+		 console 印出Log
+		*****************

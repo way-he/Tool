@@ -13,23 +13,30 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class CCBOutputWordToExcel {
-	//CCBÀÉ®×¸ô®|¡A°_©l»İ¬°¸ê®Æ§¨
-	static String inputResourcePath = "C:\\Users\\way82\\Desktop\\¤ñ¸û";
-	//Excel¿é¥X¦ì¸m
-	static String outputExcelPath = "C:\\Users\\way82\\Desktop\\¤ñ¸û\\ccbÂ½Ä¶¸ê®Æ.xlsx";
-	static Workbook wb = null; 
 	
+	//CCBæª”æ¡ˆè·¯å¾‘ï¼Œèµ·å§‹éœ€ç‚ºè³‡æ–™å¤¾
+	static String inputResourcePath = "C:\\Users\\way82\\Desktop\\æ¯”è¼ƒ";
+	
+	//Excelè¼¸å‡ºä½ç½®
+	static String outputExcelPath = "C:\\Users\\way82\\Desktop\\æ¯”è¼ƒ\\ccbç¿»è­¯è³‡æ–™.xlsx";
+	
+	
+		
+	static Workbook wb = null; 	
 	static Sheet sheet = null;
 	static Row row = null;
 	static Cell cell = null;
@@ -37,7 +44,7 @@ public class CCBOutputWordToExcel {
 	static public void pathFile(String path) throws IOException {
 		File file = new File(path);
 		String[] filenames;
-		String fullpath = file.getAbsolutePath(); // ¨ú±o¸ô®|
+		String fullpath = file.getAbsolutePath(); // å–å¾—è·¯å¾‘
 		if (file.isDirectory()){
 			filenames = file.list();
 			for (int i = 0; i < filenames.length; i++){
@@ -45,7 +52,7 @@ public class CCBOutputWordToExcel {
 					if (tempFile.isDirectory()){
 						pathFile(fullpath + "\\" +filenames[i]);
 					}else {
-						//¥u³B²zccbÀÉ®×
+						//åªè™•ç†ccbæª”æ¡ˆ
 						if(!filenames[i].substring(filenames[i].length()-3).equals("ccb")) {
 							continue;
 						}
@@ -54,7 +61,7 @@ public class CCBOutputWordToExcel {
 	
 				}
 		}else {
-			System.out.println("[" + file + "]¤£¬O¥Ø¿ı");
+			System.out.println("[" + file + "]ä¸æ˜¯ç›®éŒ„");
 		}
 		
 	}
@@ -62,29 +69,29 @@ public class CCBOutputWordToExcel {
 	public static void main(String[] args) throws IOException {
 		jpWord = new ArrayList<String>();
 		pathFile(inputResourcePath);   
-        //excel¥Í¦¨
+        //excelç”Ÿæˆ
         String extString = outputExcelPath.substring(outputExcelPath.lastIndexOf("."));
         if(".xls".equals(extString)){
             wb = new HSSFWorkbook();
         }else if(".xlsx".equals(extString)){
             wb = new XSSFWorkbook();
         }else{
-            System.out.println("µL®ÄÀÉ®×");
+            System.out.println("ç„¡æ•ˆæª”æ¡ˆ");
             return;
         }
         sheet = wb.createSheet();
-        //ªí®æ¼e«×½Õ¾ã
+        //è¡¨æ ¼å¯¬åº¦èª¿æ•´
         sheet.setColumnWidth(0, 150 * 125);
         sheet.setColumnWidth(1, 150 * 125);
         sheet.setColumnWidth(2, 150 * 125); 
-        //¼ĞÃD
-        String[] titleStrings = new String[] {"­ì¤å","Ä¶¤å","¸ô®|","¦æ¼Æ"};
+        //æ¨™é¡Œ
+        String[] titleStrings = new String[] {"åŸæ–‡","è­¯æ–‡","è·¯å¾‘(ä¸å¯ä¿®æ”¹)","è¡Œæ•¸(ä¸å¯ä¿®æ”¹)"};
         saveData(titleStrings);
         for(int listIndex = 0 ; listIndex < jpWord.size(); listIndex++) {
         	System.out.println(jpWord.get(listIndex));
         	saveData(new String[] {jpWord.get(listIndex), "", jpWord.get(++listIndex), jpWord.get(++listIndex)});     	
         }     
-        //¿é¥Xexcel
+        //è¼¸å‡ºexcel
         FileOutputStream fos = new FileOutputStream(new File(outputExcelPath));
         wb.write(fos);
         fos.flush();
@@ -114,19 +121,43 @@ public class CCBOutputWordToExcel {
 	}
 	
 	static int mRowNumber = 0;
+	static boolean isFirstRow = true;
 	static public void saveData(String[] data) {
-	        row = sheet.createRow(mRowNumber++);
+		
+		CellStyle firstRowStyle = null;
+        if(isFirstRow) {
+            firstRowStyle = wb.createCellStyle();
+    	   	Font font = wb.createFont();
+    	   	font.setColor(HSSFColor.GREEN.index);
+    	   	firstRowStyle.setFont(font);
+    	   	firstRowStyle.setLocked(true);
+            isFirstRow = false;
+        }
+		
+		CellStyle lockstyle =  wb.createCellStyle();
+        lockstyle.setLocked(true);//è®¾ç½®é”å®š
+        
+        CellStyle unlockStyle= wb.createCellStyle();
+        unlockStyle.setLocked(false);
+
+	        row = sheet.createRow(mRowNumber);
 	        for(int i = 0; i < data.length; i++) {
 		        cell = row.createCell(i);
 		        cell.setCellValue(data[i]);
-		        if(i == 4) {
-		        	CellStyle style = wb.createCellStyle();
-		        	 Font font = wb.createFont();
-		        	 font.setColor(HSSFColor.RED.index);
-		        	 style.setFont(font);
-		        	 cell.setCellStyle(style);
+		        
+		        if(mRowNumber == 0) {
+		        	cell.setCellStyle(firstRowStyle);
+		        }else{
+			        if(i >1 ) {
+			            cell.setCellStyle(lockstyle);
+			        }else {
+			        	cell.setCellStyle(unlockStyle);	        	
+			        }
 		        }
+
 	        }
+	        sheet.protectSheet("123456");
+	        mRowNumber++;
 	}
 	
 }

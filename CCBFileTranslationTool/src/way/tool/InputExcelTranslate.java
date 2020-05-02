@@ -28,10 +28,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class InputExcelTranslate {
+	
+	//翻譯Excel讀取位置
 	static String inputExcelPath = "C:\\Users\\way82\\Desktop\\比較\\ccb翻譯資料.xlsx";
+	
+	
 	public static void main(String[] args) throws IOException {
-		
-
 		Workbook wb = null;
 		String extString = inputExcelPath.substring(inputExcelPath.lastIndexOf("."));
 		InputStream is = new FileInputStream(inputExcelPath);
@@ -120,7 +122,7 @@ public class InputExcelTranslate {
 		in.close();
 		System.out.println("開始寫入");
 		File file2=new File(path);
-		out=new FileOutputStream(file2);//沒有指定檔案則會建立
+		out=new FileOutputStream(file2);
 		for(int i = 0; i < container.size() ; i++) {
 			out.write(container.get(i));
 		}
