@@ -14,7 +14,7 @@ Run程式
 *ccb自動翻譯
 Excel譯文欄位不得為空
 
-開啟InputExcelTranslate.class
+開啟InputExcelTranslate.class\n
 修改inputExcelPath:輸入excel的路徑
 ccb路徑需要與excel路徑一致
 Run程式
