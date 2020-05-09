@@ -29,13 +29,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class CCBOutputWordToExcel {
 	
 	//CCB檔案路徑，起始需為資料夾
-	static String inputResourcePath = "C:\\Users\\way82\\Desktop\\比較";
+	static String inputResourcePath = "C:\\Users\\way82\\Desktop\\Tool\\excel\\123\\SpriteBuilder Resources";
 	
 	//Excel輸出位置
-	static String outputExcelPath = "C:\\Users\\way82\\Desktop\\比較\\ccb翻譯資料.xlsx";
+	static String outputExcelPath = "C:\\Users\\way82\\Desktop\\Tool\\excel\\測試功能.xlsx";
 	
-	
-		
+	static String parserSpecWord = "wayAddRule";		
 	static Workbook wb = null; 	
 	static Sheet sheet = null;
 	static Row row = null;
@@ -85,11 +84,10 @@ public class CCBOutputWordToExcel {
         sheet.setColumnWidth(1, 150 * 125);
         sheet.setColumnWidth(2, 150 * 125); 
         //標題
-        String[] titleStrings = new String[] {"原文","譯文","路徑(不可修改)","行數(不可修改)"};
+        String[] titleStrings = new String[] {"原文","譯文","路徑(不可修改)"};
         saveData(titleStrings);
         for(int listIndex = 0 ; listIndex < jpWord.size(); listIndex++) {
-        	System.out.println(jpWord.get(listIndex));
-        	saveData(new String[] {jpWord.get(listIndex), "", jpWord.get(++listIndex), jpWord.get(++listIndex)});     	
+        	saveData(new String[] {jpWord.get(listIndex), "", jpWord.get(++listIndex)});     	
         }     
         //輸出excel
         FileOutputStream fos = new FileOutputStream(new File(outputExcelPath));
@@ -98,27 +96,59 @@ public class CCBOutputWordToExcel {
         fos.close();
     	
     }
-	
+	static boolean isNotAll = false;
 	static public void parserWord(String inputResourcePath) throws IOException {
 		Pattern r = Pattern.compile("<string>[\\x{2E80}-\\x{9FFF}]+?.*?</string>");
 		ArrayList<String> ccbWord = new ArrayList<String>();
         InputStreamReader isr = new InputStreamReader(new FileInputStream(inputResourcePath), "UTF-8");
         BufferedReader br = new BufferedReader(isr);
+        StringBuilder lineBuffer = new StringBuilder();
         while (br.ready()) {
-        	ccbWord.add(br.readLine());
+        	String line = br.readLine();
+        	if(!isNotAll && (line.contains("<string>") && !line.contains("</string>"))) {
+        		
+        		isNotAll = true;
+        	}
+        	if(isNotAll && (line.toString().contains("</string>"))) {
+        			lineBuffer.append(parserSpecWord);
+        			lineBuffer.append(line);
+        			ccbWord.add(lineBuffer.toString()); 
+        			System.out.println(lineBuffer.toString());
+        			lineBuffer.setLength(0);
+        			isNotAll = false;
+        	}else if(isNotAll && (!line.toString().contains("</string>"))){ 		
+        		lineBuffer.append(line);
+        	}else {
+        		ccbWord.add(line);
+        	}
+        	
         }
         isr.close();
-        for(int i = 0 ; i<ccbWord.size(); i++) {
 
+        for(int i = 0 ; i<ccbWord.size(); i++) {
         	Matcher m = r.matcher(ccbWord.get(i));
             if (m.find( )) { 
-            	jpWord.add(m.group().replace("<string>", "").replace("</string>", ""));
-            	jpWord.add(inputResourcePath);
-            	jpWord.add(String.valueOf(i+1));
+            	String splitLine = m.group();
+            	if(splitLine.contains(parserSpecWord)) {
+            		String[] lineArray = splitLine.split(parserSpecWord);
+            		for(int index = 0; index < lineArray.length; index++) {
+            			saveDataToJpwordContainer(lineArray[index], inputResourcePath, String.valueOf(i+1));
+            		}
+            	}else {
+            		saveDataToJpwordContainer(splitLine, inputResourcePath, String.valueOf(i+1));
+            	}
              } 
 
         }
 	}
+	
+	private static void saveDataToJpwordContainer(String string, String path, String wordLine) {
+		System.out.println(string);
+		jpWord.add(string.replace("<string>", "").replace("</string>", ""));
+    	jpWord.add(path);
+//    	jpWord.add(wordLine); 取消記錄行數
+	}
+	
 	
 	static int mRowNumber = 0;
 	static boolean isFirstRow = true;
@@ -156,7 +186,8 @@ public class CCBOutputWordToExcel {
 		        }
 
 	        }
-	        sheet.protectSheet("123456");
+	        //上鎖需要設置密碼
+//	        sheet.protectSheet("123456");
 	        mRowNumber++;
 	}
 	

@@ -30,7 +30,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class InputExcelTranslate {
 	
 	//翻譯Excel讀取位置
-	static String inputExcelPath = "C:\\Users\\way82\\Desktop\\比較\\ccb翻譯資料.xlsx";
+	static String inputExcelPath = "C:\\Users\\way82\\Desktop\\Tool\\excel\\測試功能.xlsx";
 	
 	
 	public static void main(String[] args) throws IOException {
@@ -46,7 +46,7 @@ public class InputExcelTranslate {
 		
 		List<ArrayList<String>> excelData = parseExcel(wb);
 		for(int index = 0; index < excelData.size(); index ++) {
-			transateJpWord(excelData.get(index).get(0), excelData.get(index).get(1), excelData.get(index).get(2) ,excelData.get(index).get(3));
+			transateJpWord(excelData.get(index).get(0), excelData.get(index).get(1), excelData.get(index).get(2));
 		}
 		
 	}
@@ -89,7 +89,7 @@ public class InputExcelTranslate {
 		Cell cell;
 		int cellNum = 0;
 		String a = "";
-		for(int i = 0; i < 4; i++) {
+		for(int i = 0; i < 3; i++) {
 		cell = row.getCell(cellNum++);
 		if(cell == null) {
 			System.err.println("譯文欄位異常，不可為空");
@@ -100,7 +100,7 @@ public class InputExcelTranslate {
 		return rowData;
 	}
 
-	static public void transateJpWord(String jpWord, String twWord, String path, String wordLine) throws IOException {	
+	static public void transateJpWord(String jpWord, String twWord, String path) throws IOException {	
 		System.out.println("開始讀取:"+path);
 		//方法1
 		File file1=new File(path);
